@@ -5,8 +5,10 @@ from lab4_cam.srv import ImageSrv, ImageSrvResponse
 import cv2, time, sys
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
+import os
 
-
+this_file = os.getcwd()
+IMG_DIR = this_file + '/img/'
 # Create a CvBridge to convert ROS messages to OpenCV images
 bridge = CvBridge()
 
@@ -19,10 +21,12 @@ def ros_to_np_img(ros_img_msg):
   else:
 
     img_name = input("Save image as: ")
-    cv2.imwrite('/home/cc/ee106a/fa22/class/ee106a-acy/ros_workspaces/final_project/src/img/' + img_name + '.jpg', cv2_img)
-    return np.array(cv2_img)
+    cwd = os.getcwd()
+    cv2.imwrite(IMG_DIR + img_name + '.jpg', cv2_img)
+    print("Saved image", img_name)
+    return np.array(cv2_img), img_name
 
-if __name__ == '__main__':
+def main():
   
   # Waits for the image service to become available
   rospy.wait_for_service('last_image')
@@ -44,10 +48,9 @@ if __name__ == '__main__':
     ros_img_msg = last_image_service().image_data
 
     # Convert the ROS message to a NumPy image
-    np_image = ros_to_np_img(ros_img_msg)
+    np_image, img_name = ros_to_np_img(ros_img_msg)
     print("created np image")
     # rospy.signal_shutdown("Shutting down.")
-    # print("hmm")
 
     # # Display the CV Image
     # cv2.imshow("CV Image", np_image)
@@ -61,4 +64,5 @@ if __name__ == '__main__':
     
     # # When done, get rid of windows
     # cv2.destroyAllWindows()
+  return img_name
 

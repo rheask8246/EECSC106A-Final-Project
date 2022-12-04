@@ -89,7 +89,7 @@ def visit(image, x, y):
     return points
 
 
-if __name__ == '__main__':
-    image = np.random.choice([0,1], size = (5,5), p = [1./3, 2./3])
+def main(image):
+    # image = np.random.choice([0,1], size = (5,5), p = [1./3, 2./3])
     print(image, "\n")
     print(array_to_path(image), "\n")
