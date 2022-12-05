@@ -21,10 +21,6 @@ else:
     print("Unable to get file " + args.filename + " - Aborting!")
     quit()
 
-#default thresholds
-lower = 255/3
-upper = 255
-
 def read_image(img_name, grayscale=False):
     """ reads an image
 
@@ -84,7 +80,7 @@ def show_image(img_name, title='Fig', grayscale=False):
         plt.title(title)
         plt.show()
 
-def edge_detect_canny(gray_img, lower=255/3, upper=255):
+def edge_detect_canny(gray_img, lower=0, upper=255):
     """perform Canny edge detection
 
     Parameter
@@ -97,15 +93,16 @@ def edge_detect_canny(gray_img, lower=255/3, upper=255):
     ndarray
         gray_img with edges outlined
     """
-
-    edges = cv2.Canny(gray_img, lower, upper) #cv2.Canny documentation recommended thresholds
+    edges = cv2.medianBlur(gray_img, 15)
+    # edges = cv2.bilateralFilter(gray_img,7,75,75)
+    edges = cv2.Canny(edges, lower, upper, apertureSize = 3) #cv2.Canny documentation recommended thresholds
 
     return edges
 
 def to_grayscale(rgb_img):
     return np.dot(rgb_img[... , :3] , [0.299 , 0.587, 0.114])
 
-def show_edge_canny(img):
+def show_edge_canny(img, lower, upper):
     edges = edge_detect_canny(img, lower, upper)
     show_image(edges, title='edge canny', grayscale=True)
     return edges
@@ -114,7 +111,13 @@ if __name__ == "__main__":
 # def main(filename):
     test_img = read_image(IMG_DIR + filename + ".jpg", grayscale=True)
     # test_img_color = read_image(IMG_DIR + filename)
-    edge_img = show_edge_canny(test_img)
+
+    v = np.median(test_img)
+    sigma = 0.40
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edge_img = show_edge_canny(test_img, lower, upper)
+
     save_img = False
     while save_img == False:
         draw_img = input("Do you want to draw this image? Enter 'yes' or 'no'. (If you want to exit the program, press 'x'.)")
@@ -134,26 +137,26 @@ if __name__ == "__main__":
                         pass
                     else:
                         lower -= 10
-                        edge_img = show_edge_canny(test_img)
+                        edge_img = show_edge_canny(test_img, lower, upper)
                 elif change_thresh == 'd':
                     if upper == 255:
                         print("Upper threshold is at limit. Cannot increase threshold.")
                         pass
                     else:
                         upper += 10
-                        edge_img = show_edge_canny(test_img)
+                        edge_img = show_edge_canny(test_img, lower, upper)
                 elif change_thresh == 'w':
                     if lower + 10 == upper:
                         print("Lower threshold must be lower than upper limit. Cannot increase threshold.")
                     else:
                         lower += 10
-                        edge_img = show_edge_canny(test_img)
+                        edge_img = show_edge_canny(test_img, lower, upper)
                 elif change_thresh == 'a':
                     if upper - 10 == lower:
                         print("Upper threshold must be higher than lower limit. Cannot decrease threshold.")
                     else:
                         upper -= 10
-                        edge_img = show_edge_canny(test_img)          
+                        edge_img = show_edge_canny(test_img, lower, upper)         
                 elif change_thresh == 'y':
                     write_image(edge_img, path_to_img)
                     draw_img_final = True
