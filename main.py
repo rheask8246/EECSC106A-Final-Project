@@ -9,7 +9,8 @@ IMG_DIR = CWD + '/img/'
 SAVE_IM_DIR = CWD + '/lab4_cam/src'
 sys.path.insert(0, SAVE_IM_DIR)
 
-import save_image as s
+# import save_image as s
+import save_webcam_img as cam_to_img 
 import image_to_canny as im_2_can
 import draw as d
 
@@ -23,14 +24,14 @@ import draw as d
 
 
 #Step 1
-raw_img = s.main() #need to test if this works
+img, save_name = cam_to_img.main()
 
 #Step 2
-#TODO: preprocess
+#TODO: preprocessing... do if needed, but for rn median filtering + blurring works fine
 
 #Step 3
-canny_img = im_2_can.main(raw_img)
+canny_img = im_2_can.main(save_name)
 
-#Step 4
+# #Step 4
 d.main(canny_img)
 

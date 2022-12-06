@@ -11,15 +11,15 @@ this_file = os.getcwd()
 IMG_DIR = this_file + '/img/'
 
 #argument parsing for testing
-import argparse
-parser = argparse.ArgumentParser(description='Convert raw images to edge-detected image.')
-parser.add_argument('-f', '--filename', default='face', help='Image file to conduct edge detection on.')
-args = parser.parse_args()
-if args.filename != "":
-    filename = args.filename
-else:
-    print("Unable to get file " + args.filename + " - Aborting!")
-    quit()
+# import argparse
+# parser = argparse.ArgumentParser(description='Convert raw images to edge-detected image.')
+# parser.add_argument('-f', '--filename', default='face', help='Image file to conduct edge detection on.')
+# args = parser.parse_args()
+# if args.filename != "":
+#     filename = args.filename
+# else:
+#     print("Unable to get file " + args.filename + " - Aborting!")
+#     quit()
 
 def read_image(img_name, grayscale=False):
     """ reads an image
@@ -94,9 +94,8 @@ def edge_detect_canny(gray_img, lower=0, upper=255):
         gray_img with edges outlined
     """
     edges = cv2.medianBlur(gray_img, 15)
-    # edges = cv2.bilateralFilter(gray_img,7,75,75)
-    edges = cv2.Canny(edges, lower, upper, apertureSize = 3) #cv2.Canny documentation recommended thresholds
-
+    # edges = cv2.bilateralFilter(gray_img,7,75,75) #supposedly keeps edges sharp and removes noise, but this function is too finicky for me to figure out rn
+    edges = cv2.Canny(edges, lower, upper, apertureSize = 3) #aperture size must be an odd number between 3 and 7
     return edges
 
 def to_grayscale(rgb_img):
@@ -107,8 +106,7 @@ def show_edge_canny(img, lower, upper):
     show_image(edges, title='edge canny', grayscale=True)
     return edges
 
-if __name__ == "__main__":
-# def main(filename):
+def main(filename):
     test_img = read_image(IMG_DIR + filename + ".jpg", grayscale=True)
     # test_img_color = read_image(IMG_DIR + filename)
 
@@ -172,4 +170,4 @@ if __name__ == "__main__":
             quit()
         else:
             print("Please enter a valid response.")
-    # return edges
+    return edge_img
